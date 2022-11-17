@@ -17,12 +17,12 @@ ds_train = ds_train.map(normalize_img, num_parallel_calls=tf.data.experimental.A
 ds_train = ds_train.cache()
 ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
 ds_train = ds_train.batch(128)
-ds_train = ds_train.prefetch(tf.data.experimental.AUTOTUNE)
+ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
 ds_test = ds_test.map(normalize_img, num_parallel_calls=tf.data.experimental.AUTOTUNE) # 
 ds_test = ds_test.batch(128)
 ds_test = ds_test.cache()
-ds_test = ds_test.prefetch(tf.data.experimental.AUTOTUNE)
+ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
 model = tf.keras.models.Sequential([
   tf.keras.layers.Flatten(input_shape=(28, 28,1)),
@@ -38,9 +38,7 @@ model.compile(
 model.fit(
     ds_train,
     epochs=6,
-    steps_per_epoch=10,
     validation_data=ds_test,
-    validation_steps=10,
 )
 print('finish training')
 model.save('keras_mnist_model.h5')
