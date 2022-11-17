@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block body %} 
+
+<form method="POST" action="/predict" enctype="multipart/form-data">
+   <div style="text-align:center">
+       <input type="file"  name="input_file" aria-label="ファイルの選択">
+       <input type="submit" value="予測する">
+   </div>
+</form>
+
+{% endblock %}
+
+
