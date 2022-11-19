@@ -5,7 +5,7 @@ function init() {
     // --------------------------------------------------------------
     // Stage1オブジェクト：WriteCanvas
     // --------------------------------------------------------------
-    var stage1 = new createjs.Stage("WriteCanvas");
+    let stage1 = new createjs.Stage("WriteCanvas");
 
     // タッチイベントが有効なブラウザの場合、
     // CreateJSでタッチイベントを扱えるようにする
@@ -13,7 +13,7 @@ function init() {
         createjs.Touch.enable(stage1);
     }
 
-    var shape = new createjs.Shape();   // シェイプを作成
+    let shape = new createjs.Shape();   // シェイプを作成
     stage1.addChild(shape);             // ステージに配置
 
     handleClick_reset();
@@ -24,7 +24,7 @@ function init() {
     // マウスを押した時に実行される
     function handleDown(event) {
 
-        var paintColor = "#FFFFFF"                      // 筆ペンの色
+        let paintColor = "#FFFFFF"                      // 筆ペンの色 black: "#000000", white: "#FFFFFF"
 
         // 線の描画を開始
         shape.graphics
@@ -68,16 +68,16 @@ function init() {
     // --------------------------------------------------------------
     // Stage2オブジェクト：ButtonCanvas
     // --------------------------------------------------------------
-    var stage2 = new createjs.Stage("ButtonCanvas");
+    let stage2 = new createjs.Stage("ButtonCanvas");
     stage2.enableMouseOver();
 
     // ボタンを作成
-    var btn1 = createButton("Predict", 80, 30, "#0650c7");
+    let btn1 = createButton("Predict", 80, 30, "#0650c7");
     btn1.x = 20;
     btn1.y = 10;
     stage2.addChild(btn1);
 
-    var btn2 = createButton("Reset", 80, 30, "#ff6161");
+    let btn2 = createButton("Reset", 80, 30, "#ff6161");
     btn2.x = 110;
     btn2.y = 10;
     stage2.addChild(btn2);
@@ -91,12 +91,12 @@ function init() {
 
         // Canvasタグから画像に変換
         stage1.update();
-        var png = stage1.canvas.toDataURL();
+        let png = stage1.canvas.toDataURL();
         document.getElementById("ChgPngImg").src = png;
 
         // JQueryによるPOST処理
         // javascript→pythonへPNGデータ転送
-        var textData = JSON.stringify({"b64_pngdata":png});
+        let textData = JSON.stringify({"b64_pngdata":png});
 //      console.log(textData);
         $.ajax({
             type:'POST',
@@ -109,7 +109,7 @@ function init() {
             success:function(data){
                 // 返却jsonデータからparseしてデータ取り出し
 //              console.log(data);
-                var result = JSON.parse(data.ResultSet);
+                let result = JSON.parse(data.ResultSet);
                 document.getElementById("ResultImg").src = result.pred_png;
                 document.getElementById("ResultLabel").textContent = result.pred_label;
                 document.getElementById("ResultScore").textContent = result.pred_score;
@@ -132,11 +132,11 @@ function init() {
 
         // シェイプのグラフィックスを消去
         shape.graphics.clear();
-        shape.graphics.beginFill("black");
+        shape.graphics.beginFill("black"); // background color
         shape.graphics.drawRect(0, 0, 240, 240);
         shape.graphics.endFill();
         stage1.update();
-        var png = stage1.canvas.toDataURL();
+        let png = stage1.canvas.toDataURL();
         document.getElementById("ChgPngImg").src = png;
     }
 
@@ -158,12 +158,12 @@ function init() {
     function createButton(text, width, height, keyColor) {
 
         // ボタン要素をグループ化
-        var button = new createjs.Container();
+        let button = new createjs.Container();
         button.name = text; // ボタンに参考までに名称を入れておく(必須ではない)
         button.cursor = "pointer"; // ホバー時にカーソルを変更する
 
         // 通常時の座布団を作成
-        var bgUp = new createjs.Shape();
+        let bgUp = new createjs.Shape();
         bgUp.graphics
               .setStrokeStyle(1.0)
               .beginStroke(keyColor)
@@ -173,7 +173,7 @@ function init() {
         bgUp.visible = true; // 表示する
 
         // ロールオーバー時の座布団を作成
-        var bgOver = new createjs.Shape();
+        let bgOver = new createjs.Shape();
         bgOver.graphics
               .beginFill(keyColor)
               .drawRoundRect(0, 0, width, height, 4);
@@ -181,7 +181,7 @@ function init() {
         button.addChild(bgOver);
 
         // ラベルを作成
-        var label = new createjs.Text(text, "18px sans-serif", keyColor);
+        let label = new createjs.Text(text, "18px sans-serif", keyColor);
         label.x = width / 2;
         label.y = height / 2;
         label.textAlign = "center";
