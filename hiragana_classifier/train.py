@@ -8,7 +8,7 @@ from model import EfficientHiragana
 
 def main():
     # hyper parameters
-    BATCH_SIZE=256
+    BATCH_SIZE=512
     IMG_SIZE=48
 
     # load images
@@ -22,7 +22,7 @@ def main():
         image_size=(IMG_SIZE, IMG_SIZE),
     )
 
-    # train / test split
+    # train / test split with 10:1
     all_batches = tf.data.experimental.cardinality(datasets)
     test_dataset = datasets.take(all_batches // 10)
     train_dataset = datasets.skip(all_batches // 10)
@@ -34,11 +34,10 @@ def main():
     test_dataset = test_dataset.prefetch(buffer_size=AUTOTUNE)
 
     # create model
-    input_shape = IMG_SIZE #tf.keras.Input(shape=(48, 48, 1))
+    input_shape = IMG_SIZE 
     output_shape = 46
     model = EfficientHiragana(input_shape, output_shape)
     optimizer = tf.keras.optimizers.Adam()
-    # loss = tf.keras.losses.CategoricalCrossentropy()
     model.compile(
         optimizer=optimizer,
         loss='categorical_crossentropy',
@@ -46,14 +45,14 @@ def main():
     )
 
     # freeze the 100 layers to fine-tuning
-    model.trainable = False
+    model.trainable = True
     print("Number of layers in the base model: ", len(model.layers))
     # fine_tune_at = 100
     # for layer in model.layers[:fine_tune_at]:
     #   layer.trainable = False
 
     # train model 
-    epochs=1
+    epochs=5
 
     history = model.fit(
         train_dataset,
@@ -64,7 +63,6 @@ def main():
 
     model.save_weights('EfficientNetB0_Hiragana.h5')
 
-    # model.build(input_shape=(None, IMG_SIZE, IMG_SIZE, 3))
     # print(model.summary())
 
     # visualize the results
@@ -79,7 +77,7 @@ def main():
     # plt.plot(val_acc, label='Validation Accuracy')
     # plt.legend(loc='lower right')
     # plt.ylabel('Accuracy')
-    # # plt.ylim([min(plt.ylim()),1])
+    # plt.ylim([min(plt.ylim()),1])
     # plt.title('Training and Validation Accuracy')
 
     # plt.subplot(2, 1, 2)
@@ -87,30 +85,12 @@ def main():
     # plt.plot(val_loss, label='Validation Loss')
     # plt.legend(loc='upper right')
     # plt.ylabel('Cross Entropy')
-    # # plt.ylim([0,1.0])
+    # plt.ylim([0,1.0])
     # plt.title('Training and Validation Loss')
     # plt.xlabel('epoch')
     
     # plt.savefig('results.png')
     # plt.show()
-
-    # plot 
-    fig, (axL, axR) = plt.subplots(ncols=2, figsize=(10,4))
-    # for loss
-    axL.plot(history.history['loss'],label="loss for training")
-    axL.plot(history.history['val_loss'],label="loss for validation")
-    axL.set_title('model loss')
-    axL.set_xlabel('epoch')
-    axL.set_ylabel('loss')
-    axL.legend(loc='upper right')
-    axR.plot(history.history['accuracy'],label="acc for training")
-    axR.plot(history.history['val_accuracy'],label="acc for validation")
-    axR.set_title('model accuracy')
-    axR.set_xlabel('epoch')
-    axR.set_ylabel('accuracy')
-    axR.legend(loc='upper right')
-    plt.show()
-    plt.savefig('results.png')
 
     # evaluate the model using test_dataset
     loss, accuracy = model.evaluate(test_dataset)

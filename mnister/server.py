@@ -1,5 +1,5 @@
 ############################################################
-# mnister (keras save_model) by PoodleMaster
+# mnister (keras save_model) by YoshimasaIwano, Kaiyu0128
 ############################################################
 import argparse
 import tensorflow
@@ -53,7 +53,7 @@ if args.colab:                              # use Google Colab
 # pip install --upgrade keras --user
 
 # print("keras : ", keras.__version__)
-print("tensorflow : ", tensorflow.__version__)
+# print("tensorflow : ", tensorflow.__version__)
 
 # ラベル
 label = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
