@@ -6,3 +6,4 @@ hiragana_classifier/datasets/*
 hiragana_classifier/.ipynb_checkpoints/*
 */__pycahe__/*
 hiragana_classifier/__pycache__/*
+.DS_Store
