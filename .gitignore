@@ -1,3 +1,8 @@
 # add file names here
 *.h5
 hiragana_classifier/datasets/*
+*/.ipynb_checkponts/*
+.ipynb_checkponts
+hiragana_classifier/.ipynb_checkpoints/*
+*/__pycahe__/*
+hiragana_classifier/__pycache__/*
