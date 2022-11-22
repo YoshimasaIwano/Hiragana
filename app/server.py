@@ -1,6 +1,6 @@
-############################################################
-# mnister (keras save_model) by YoshimasaIwano, Kaiyu0128
-############################################################
+'''
+mnister (keras save_model) by YoshimasaIwano, Kaiyu0128
+'''
 import argparse
 import tensorflow
 import base64
@@ -57,6 +57,7 @@ if args.colab:                              # use Google Colab
 
 # ラベル
 label = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+class_names = ['a', 'e', 'ha', 'he', 'hi', 'ho', 'hu', 'i', 'ka', 'ke', 'ki', 'ko', 'ku', 'ma', 'me', 'mi', 'mo', 'mu', 'na', 'ne', 'ni', 'nn', 'no', 'nu', 'o', 'ra', 're', 'ri', 'ro', 'ru', 'sa', 'se', 'si', 'so', 'su', 'ta', 'te', 'ti', 'to', 'tu', 'u', 'wa', 'wo', 'ya', 'yo', 'yu']
 
 # modelの読込と表示
 model = load_model('colab_mnist.hdf5')
@@ -89,19 +90,19 @@ def output():
 #   display(bindata, "bindata")
 
     # pillow形式で読み込み画像のリサイズを行う
-    imgPIL = Image.open(BytesIO(bindata)).convert('RGB')
+    img_PIL = Image.open(BytesIO(bindata)).convert('RGB')
     if img_ch == 1:
-        imgPIL = imgPIL.convert('L')            # グレースケール
-    imgPIL = imgPIL.resize((img_w, img_h))      # リサイズ
+        img_PIL = img_PIL.convert('L')            # グレースケール
+    img_PIL = img_PIL.resize((img_w, img_h))      # リサイズ
 #   imgPIL.show()
 
     # pillow形式→バイナリ変換
     with BytesIO() as output_png:
-        imgPIL.save(output_png, format="PNG")
+        img_PIL.save(output_png, format="PNG")
         contents = output_png.getvalue()  # バイナリ取得
 
     # mnist形式
-    x = img_to_array(imgPIL) / 255
+    x = img_to_array(img_PIL) / 255
     x = x[None, ...]
 
     # shape確認
@@ -125,11 +126,11 @@ def output():
     print("------------------------------------------------------------------")
 
     # base64エンコード
-    tmpdata = str(base64.b64encode(contents))
+    tmp_data = str(base64.b64encode(contents))
     #   display(tmpdata, "tmpdata")
-    tmpdata = tmpdata[2:-1]  # 「ｂ’～’」の中身だけをエンコード
+    tmp_data = tmp_data[2:-1]  # 「ｂ’～’」の中身だけをエンコード
 
-    data1 = "data:image/png;base64," + tmpdata
+    data1 = "data:image/png;base64," + tmp_data
     data2 = pred_label
     data3 = score
     label_score = [str("{:.10f}".format(n)) for n in pred[0]]
