@@ -16,16 +16,23 @@ def main():
     data_dir = os.path.join(PATH, 'datasets')
     datasets = tf.keras.utils.image_dataset_from_directory(
         data_dir,
+        labels='inferred',
         shuffle=True,
         label_mode='categorical',
         batch_size=BATCH_SIZE,
         image_size=(IMG_SIZE, IMG_SIZE),
     )
 
+    class_names = datasets.class_names
+    print(class_names)
+    # class_names = ['a', 'e', 'ha', 'he', 'hi', 'ho', 'hu', 'i', 'ka', 'ke', 'ki', 'ko', 'ku', 'ma', 'me', 'mi', 'mo', 'mu', 'na', 'ne', 'ni', 'nn', 'no', 'nu', 'o', 'ra', 're', 'ri', 'ro', 'ru', 'sa', 'se', 'si', 'so', 'su', 'ta', 'te', 'ti', 'to', 'tu', 'u', 'wa', 'wo', 'ya', 'yo', 'yu']
+
     # train / test split with 10:1
     all_batches = tf.data.experimental.cardinality(datasets)
     test_dataset = datasets.take(all_batches // 10)
     train_dataset = datasets.skip(all_batches // 10)
+
+    
 
     # prefetch
     AUTOTUNE = tf.data.AUTOTUNE
@@ -95,6 +102,7 @@ def main():
     # evaluate the model using test_dataset
     loss, accuracy = model.evaluate(test_dataset)
     print('Test accuracy :', accuracy)
+    print('Test loss :', loss)
 
 if __name__ == '__main__':
     main()
