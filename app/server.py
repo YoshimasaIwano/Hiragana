@@ -14,15 +14,9 @@ from io import BytesIO
 from PIL import Image
 
 
-############################################################
-# Flask
-############################################################
 app = Flask(__name__)
 
-
-############################################################
 # validation
-############################################################
 def validation():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--colab',
@@ -31,110 +25,81 @@ def validation():
     args = parser.parse_args()
     return args
 
-
-############################################################
-# 引数チェック
-############################################################
+#  check argument
 args = validation()
-if args.colab:                              # use Google Colab
+if args.colab:    
     print("use flask-ngrok.")
     run_with_ngrok(app)
 
 
-############################################################
-# 初期設定
-############################################################
-# 【注意】
-# keras or tensorflow のバージョンをupgradeしてバージョンUPしておくこと
-# keras : 2.3.1
-# tensorflow : 2.3.0
-# pip install --upgrade pip --user
-# pip install --upgrade tensorflow --user
-# pip install --upgrade keras --user
 
-# print("keras : ", keras.__version__)
-# print("tensorflow : ", tensorflow.__version__)
 
-# ラベル
+# labels
 label = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 class_names = ['a', 'e', 'ha', 'he', 'hi', 'ho', 'hu', 'i', 'ka', 'ke', 'ki', 'ko', 'ku', 'ma', 'me', 'mi', 'mo', 'mu', 'na', 'ne', 'ni', 'nn', 'no', 'nu', 'o', 'ra', 're', 'ri', 'ro', 'ru', 'sa', 'se', 'si', 'so', 'su', 'ta', 'te', 'ti', 'to', 'tu', 'u', 'wa', 'wo', 'ya', 'yo', 'yu']
 
-# modelの読込と表示
+# loading model and summary
 model = load_model('colab_mnist.hdf5')
 model.summary()
 
-# Input Sizeの自動判別
+# Input Size classification
 _, img_w, img_h, img_ch = model.layers[0].input.shape
 print("img_w:{} img_h:{} img_ch:{}".format(img_w, img_h, img_ch))
 
-############################################################
 # index.html
-############################################################
 @app.route("/")
 def index():
     return render_template('index.html')
 
 
-############################################################
-# Input.jsからPOSTされたときに動作
-############################################################
+
+# Activate when hiragana is posted from input.js
 @app.route('/output', methods=['POST'])
 def output():
-    # json形式でデータを受け取る
+    # Receiving hiragana input as json type
     b64_pngdata = request.json['b64_pngdata']
-#   display(b64_pngdata, "b64_pngdata")
 
-    # base64デコード
-    tmpdata = b64_pngdata.split(',')  # base64のヘッダを削除
-    bindata = base64.b64decode(tmpdata[1])  # 「data:image/png;base64,～」以降のデータのみをデコード
-#   display(bindata, "bindata")
+    # base64 decode
+    tmpdata = b64_pngdata.split(',')  
+    bindata = base64.b64decode(tmpdata[1])  
 
-    # pillow形式で読み込み画像のリサイズを行う
+    # Resizing input image size
     img_PIL = Image.open(BytesIO(bindata)).convert('RGB')
     if img_ch == 1:
-        img_PIL = img_PIL.convert('L')            # グレースケール
-    img_PIL = img_PIL.resize((img_w, img_h))      # リサイズ
-#   imgPIL.show()
+        img_PIL = img_PIL.convert('L')     
+    img_PIL = img_PIL.resize((img_w, img_h))    
 
-    # pillow形式→バイナリ変換
+    # pillow→binary
     with BytesIO() as output_png:
         img_PIL.save(output_png, format="PNG")
-        contents = output_png.getvalue()  # バイナリ取得
+        contents = output_png.getvalue()  
 
-    # mnist形式
+    # mnist type convert
     x = img_to_array(img_PIL) / 255
     x = x[None, ...]
 
-    # shape確認
-#   print(x.shape)
-    print("")
-
-    # 遊星からの物体Xの推測
+    # prediction
     pred = model.predict(x)
     np.set_printoptions(suppress=True, precision=10, floatmode='fixed')
     print(pred)
-#   print(type(pred))
-    print("")
 
-    # 推測ラベル
+    # predicted label
     pred_label = label[int(np.argmax(pred[0]))]
     print("label:", pred_label)
 
-    # 推測スコア
+    # predicted score
     score = str("{:.10f}".format(np.max(pred)))
     print("score:", score)
     print("------------------------------------------------------------------")
 
-    # base64エンコード
+    # base64 encode
     tmp_data = str(base64.b64encode(contents))
-    #   display(tmpdata, "tmpdata")
-    tmp_data = tmp_data[2:-1]  # 「ｂ’～’」の中身だけをエンコード
+    tmp_data = tmp_data[2:-1]  
 
     data1 = "data:image/png;base64," + tmp_data
     data2 = pred_label
     data3 = score
     label_score = [str("{:.10f}".format(n)) for n in pred[0]]
-#   print(label_name)
 
     return_data = {"pred_png": data1,
                    "pred_label": data2,
@@ -153,20 +118,14 @@ def output():
 
     return jsonify(ResultSet=json.dumps(return_data))
 
-
-############################################################
-# debug用
-############################################################
+# For debug
 def display(data, name):
     print(name)
     print(data)
     print(type(data))
     print("")
 
-
-############################################################
-# flask起動
-############################################################
+# Activate flask
 if __name__ == '__main__':
     app.debug = False
     app.run()
