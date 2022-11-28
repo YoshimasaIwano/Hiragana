@@ -12,6 +12,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 from io import BytesIO
 from PIL import Image
+from waitress import serve
 
 
 ############################################################
@@ -169,4 +170,5 @@ def display(data, name):
 ############################################################
 if __name__ == '__main__':
     app.debug = False
-    app.run()
+    # app.run()
+    serve(app, host='0.0.0.0', port=5000)

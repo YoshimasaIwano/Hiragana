@@ -1,48 +1,18 @@
-absl-py==0.10.0
-astunparse==1.6.3
-cachetools==4.1.1
-certifi==2020.6.20
-chardet==3.0.4
-click==7.1.2
-cycler==0.10.0
-Flask==1.1.2
-flask-ngrok==0.0.25
-google-auth==1.21.1
-google-auth-oauthlib==0.4.1
-google-pasta==0.2.0
-grpcio==1.32.0
-h5py==2.10.0
-idna==2.10
-importlib-metadata==1.7.0
-itsdangerous==1.1.0
-Jinja2==2.11.2
-Keras-Preprocessing==1.1.2
-kiwisolver==1.2.0
-Markdown==3.2.2
-MarkupSafe==1.1.1
-matplotlib==3.3.1
-numpy==1.18.5
-oauthlib==3.1.0
-olefile==0.46
-opt-einsum==3.3.0
-Pillow==7.2.0
-protobuf==3.13.0
-pyasn1==0.4.8
-pyasn1-modules==0.2.8
-pyparsing==2.4.7
-python-dateutil==2.8.1
-requests==2.24.0
-requests-oauthlib==1.3.0
-rsa==4.6
-scipy==1.4.1
-six==1.15.0
-tensorboard-plugin-wit==1.7.0
-tensorflow==2.3.0
-termcolor==1.1.0
-tornado==6.0.4
-urllib3==1.25.10
-Werkzeug==1.0.1
-wincertstore==0.2
-wrapt==1.12.1
-zipp==3.1.0
-gunicorn==20.0.4
+brotlipy==0.7.0
+certifi @ file:///opt/conda/conda-bld/certifi_1655968806487/work/certifi
+cffi @ file:///tmp/abs_98z5h56wf8/croots/recipe/cffi_1659598650955/work
+charset-normalizer @ file:///tmp/build/80754af9/charset-normalizer_1630003229654/work
+conda==4.14.0
+conda-package-handling @ file:///tmp/build/80754af9/conda-package-handling_1649105784853/work
+cryptography @ file:///tmp/build/80754af9/cryptography_1652101588893/work
+cytoolz==0.11.0
+idna @ file:///tmp/build/80754af9/idna_1637925883363/work
+pycosat==0.6.3
+pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
+pyOpenSSL @ file:///opt/conda/conda-bld/pyopenssl_1643788558760/work
+PySocks @ file:///tmp/build/80754af9/pysocks_1605305812635/work
+requests @ file:///opt/conda/conda-bld/requests_1657734628632/work
+ruamel-yaml-conda @ file:///tmp/build/80754af9/ruamel_yaml_1616016711199/work
+toolz @ file:///tmp/build/80754af9/toolz_1636545406491/work
+tqdm @ file:///opt/conda/conda-bld/tqdm_1650891076910/work
+urllib3 @ file:///tmp/abs_5dhwnz6atv/croots/recipe/urllib3_1659110457909/work
