@@ -2,19 +2,19 @@
 window.addEventListener("load", init);
 function init() {
     // canvas object
-    let canvas = new createjs.Stage("WriteCanvas");
+    let drawCanvas = new createjs.Stage("WriteCanvas");
 
     // enable touch Event if possible
     if (createjs.Touch.isSupported()) {
-        createjs.Touch.enable(canvas);
+        createjs.Touch.enable(drawCanvas);
     }
 
-    let shape = new createjs.Shape();   
-    canvas.addChild(shape);             
+    let shape = new createjs.Shape();
+    drawCanvas.addChild(shape);             
     resetEvent();
 
     // set mousedown event listener
-    canvas.addEventListener("stagemousedown", handleDown);
+    drawCanvas.addEventListener("stagemousedown", handleDown);
 
     // when mouse is down
     function handleDown(event) {
@@ -28,8 +28,8 @@ function init() {
             .moveTo(event.stageX, event.stageY);
 
         // add events mouse move and up
-        canvas.addEventListener("stagemousemove", handleMove);
-        canvas.addEventListener("stagemouseup", handleUp);
+        drawCanvas.addEventListener("stagemousemove", handleMove);
+        drawCanvas.addEventListener("stagemouseup", handleUp);
     }
 
     // mouse move events
@@ -43,8 +43,8 @@ function init() {
         shape.graphics.endStroke();
 
         // release the move and up events
-        canvas.removeEventListener("stagemousemove", handleMove);
-        canvas.removeEventListener("stagemouseup", handleUp);
+        drawCanvas.removeEventListener("stagemousemove", handleMove);
+        drawCanvas.removeEventListener("stagemouseup", handleUp);
     }
 
     // To update image
@@ -52,7 +52,7 @@ function init() {
     createjs.Ticker.addEventListener("tick", onTick);
 
     function onTick() {
-        canvas.update();
+        drawCanvas.update();
     }
 
 
@@ -79,8 +79,8 @@ function init() {
     function predictEvent(event) {
 
         // trasform canvas to image
-        canvas.update();
-        let png = canvas.canvas.toDataURL();
+        drawCanvas.update();
+        let png = drawCanvas.canvas.toDataURL();
         // document.getElementById("ChgPngImg").src = png;
 
         // JQuery
@@ -92,8 +92,9 @@ function init() {
             data:textData,
             contentType:'application/json',
 
-            success:function(data){
-                let ret = JSON.parse(data.results);
+            success:function(json_data){
+                console.log(json_data);
+                let ret = JSON.parse(json_data.results);
                 document.getElementById("ResultImg").src = ret.pred_png;
                 document.getElementById("ResultLabel").textContent = ret.pred_label;
                 document.getElementById("ResultScore").textContent = ret.pred_score;
@@ -107,8 +108,8 @@ function init() {
         shape.graphics.beginFill("white"); 
         shape.graphics.drawRect(0, 0, 240, 240);
         shape.graphics.endFill();
-        canvas.update();
-        let png = canvas.canvas.toDataURL();
+        drawCanvas.update();
+        // let png = canvas.canvas.toDataURL();
         // document.getElementById("ChgPngImg").src = png;
     }
 

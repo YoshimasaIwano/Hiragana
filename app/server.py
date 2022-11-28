@@ -7,8 +7,8 @@ import base64
 import json
 import numpy as np
 from flask import Flask, request, render_template, jsonify
-from flask_ngrok import run_with_ngrok
-from tensorflow.keras.models import load_model
+# from flask_ngrok import run_with_ngrok
+# from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 from io import BytesIO
 from PIL import Image
@@ -91,9 +91,9 @@ def output():
     data = str(base64.b64encode(img_values))
     data = data[2:-1]  
 
-    data = "data:image/png;base64," + data
+    img_data = "data:image/png;base64," + data
 
-    return_data = {"pred_png": data,
+    return_data = {"pred_png": img_data,
                    "pred_label": pred_label,
                    "pred_score": score,
                    }
