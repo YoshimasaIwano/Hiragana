@@ -162,7 +162,7 @@ def output():
         contents = output_png.getvalue()  
 
     # mnist type convert
-    x = img_to_array(img_PIL) #/ 255
+    x = img_to_array(img_PIL) 
     x = x[None, ...]
 
     # prediction
