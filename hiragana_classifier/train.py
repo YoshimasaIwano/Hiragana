@@ -23,8 +23,8 @@ def main():
         image_size=(IMG_SIZE, IMG_SIZE),
     )
 
-    class_names = datasets.class_names
-    print(class_names)
+    # class_names = datasets.class_names
+    # print(class_names)
     # class_names = ['a', 'e', 'ha', 'he', 'hi', 'ho', 'hu', 'i', 'ka', 'ke', 'ki', 'ko', 'ku', 'ma', 'me', 'mi', 'mo', 'mu', 'na', 'ne', 'ni', 'nn', 'no', 'nu', 'o', 'ra', 're', 'ri', 'ro', 'ru', 'sa', 'se', 'si', 'so', 'su', 'ta', 'te', 'ti', 'to', 'tu', 'u', 'wa', 'wo', 'ya', 'yo', 'yu']
 
     # train / test split with 10:1
@@ -70,39 +70,12 @@ def main():
 
     model.save_weights('EfficientNetB0_Hiragana.h5')
 
-    # print(model.summary())
-
-    # visualize the results
-    # acc = history.history['accuracy']
-    # val_acc = history.history['val_accuracy']
-    # loss = history.history['loss']
-    # val_loss = history.history['val_loss']
-
-    # plt.figure(figsize=(8, 8))
-    # plt.subplot(2, 1, 1)
-    # plt.plot(acc, label='Training Accuracy')
-    # plt.plot(val_acc, label='Validation Accuracy')
-    # plt.legend(loc='lower right')
-    # plt.ylabel('Accuracy')
-    # plt.ylim([min(plt.ylim()),1])
-    # plt.title('Training and Validation Accuracy')
-
-    # plt.subplot(2, 1, 2)
-    # plt.plot(loss, label='Training Loss')
-    # plt.plot(val_loss, label='Validation Loss')
-    # plt.legend(loc='upper right')
-    # plt.ylabel('Cross Entropy')
-    # plt.ylim([0,1.0])
-    # plt.title('Training and Validation Loss')
-    # plt.xlabel('epoch')
-    
-    # plt.savefig('results.png')
-    # plt.show()
-
     # evaluate the model using test_dataset
     loss, accuracy = model.evaluate(test_dataset)
     print('Test accuracy :', accuracy)
     print('Test loss :', loss)
+
+    return 0
 
 if __name__ == '__main__':
     main()
