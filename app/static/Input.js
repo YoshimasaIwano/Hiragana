@@ -1,211 +1,174 @@
 // use Createjs and JQuery
 window.addEventListener("load", init);
 function init() {
+    // canvas object
+    let canvas = new createjs.Stage("WriteCanvas");
 
-    // --------------------------------------------------------------
-    // Stage1オブジェクト：WriteCanvas
-    // --------------------------------------------------------------
-    let stage1 = new createjs.Stage("WriteCanvas");
-
-    // タッチイベントが有効なブラウザの場合、
-    // CreateJSでタッチイベントを扱えるようにする
+    // enable touch Event if possible
     if (createjs.Touch.isSupported()) {
-        createjs.Touch.enable(stage1);
+        createjs.Touch.enable(canvas);
     }
 
-    let shape = new createjs.Shape();   // シェイプを作成
-    stage1.addChild(shape);             // ステージに配置
+    let shape = new createjs.Shape();   
+    canvas.addChild(shape);             
+    resetEvent();
 
-    handleClick_reset();
+    // set mousedown event listener
+    canvas.addEventListener("stagemousedown", handleDown);
 
-    // ステージ上でマウスボタンを押した時のイベント設定
-    stage1.addEventListener("stagemousedown", handleDown);
-
-    // マウスを押した時に実行される
+    // when mouse is down
     function handleDown(event) {
+        //  black: "#000000", white: "#FFFFFF"
+        let paintColor = "#000000"
 
-        let paintColor = "#FFFFFF"                      // 筆ペンの色 black: "#000000", white: "#FFFFFF"
-
-        // 線の描画を開始
+        // start to draw
         shape.graphics
-                .beginStroke(paintColor)                // 指定のカラーで描画
-                .setStrokeStyle(20, "round")            // 線の太さ、形
-                .moveTo(event.stageX, event.stageY);    // 描画開始位置を指定
+            .beginStroke(paintColor)
+            .setStrokeStyle(20, "round") 
+            .moveTo(event.stageX, event.stageY);
 
-        // ステージ上でマウスを動かした時と離した時のイベント設定
-        stage1.addEventListener("stagemousemove", handleMove);
-        stage1.addEventListener("stagemouseup", handleUp);
+        // add events mouse move and up
+        canvas.addEventListener("stagemousemove", handleMove);
+        canvas.addEventListener("stagemouseup", handleUp);
     }
 
-    // マウスが動いた時に実行する
+    // mouse move events
     function handleMove(event) {
-
-        // マウス座標への線を引く
         shape.graphics.lineTo(event.stageX, event.stageY);
     }
 
-    // マウスボタンが離された時に実行される
+    // mouse up events
     function handleUp(event) {
-
-        // マウス座標への線を引く
         shape.graphics.lineTo(event.stageX, event.stageY);
-
-        // 線の描画を終了する
         shape.graphics.endStroke();
 
-        // イベント解除
-        stage1.removeEventListener("stagemousemove", handleMove);
-        stage1.removeEventListener("stagemouseup", handleUp);
+        // release the move and up events
+        canvas.removeEventListener("stagemousemove", handleMove);
+        canvas.removeEventListener("stagemouseup", handleUp);
     }
 
+    // To update image
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
     createjs.Ticker.addEventListener("tick", onTick);
 
     function onTick() {
-        stage1.update(); // Stageの描画を更新
+        canvas.update();
     }
 
-    // --------------------------------------------------------------
-    // Stage2オブジェクト：ButtonCanvas
-    // --------------------------------------------------------------
-    let stage2 = new createjs.Stage("ButtonCanvas");
-    stage2.enableMouseOver();
 
-    // ボタンを作成
-    let btn1 = createButton("Predict", 80, 30, "#0650c7");
-    btn1.x = 20;
-    btn1.y = 10;
-    stage2.addChild(btn1);
+    // Buttuon Object
+    let buttons = new createjs.Stage("ButtonCanvas");
+    buttons.enableMouseOver();
 
-    let btn2 = createButton("Reset", 80, 30, "#ff6161");
-    btn2.x = 110;
-    btn2.y = 10;
-    stage2.addChild(btn2);
+    // create predict button
+    let pred_button = createButton("Predict", 80, 30, "#0650c7");
+    pred_button.x = 20;
+    pred_button.y = 10;
+    buttons.addChild(pred_button);
 
-    // イベントを登録
-    btn1.addEventListener("click", handleClick_png);
-    btn2.addEventListener("click", handleClick_reset);
+    let reset_button = createButton("Reset", 80, 30, "#ff6161");
+    reset_button.x = 110;
+    reset_button.y = 10;
+    buttons.addChild(reset_button);
 
-    // Predictボタン押下イベント
-    function handleClick_png(event) {
+    // add click events
+    pred_button.addEventListener("click", predictEvent);
+    reset_button.addEventListener("click", resetEvent);
 
-        // Canvasタグから画像に変換
-        stage1.update();
-        let png = stage1.canvas.toDataURL();
-        document.getElementById("ChgPngImg").src = png;
+    // predict button event 
+    function predictEvent(event) {
 
-        // JQueryによるPOST処理
-        // javascript→pythonへPNGデータ転送
+        // trasform canvas to image
+        canvas.update();
+        let png = canvas.canvas.toDataURL();
+        // document.getElementById("ChgPngImg").src = png;
+
+        // JQuery
+        // send data from javascript to python
         let textData = JSON.stringify({"b64_pngdata":png});
-//      console.log(textData);
         $.ajax({
             type:'POST',
             url:'/output',
             data:textData,
             contentType:'application/json',
 
-            // python→javascriptへデータ返送
-            // 非同期通信が成功したら実行される
             success:function(data){
-                // 返却jsonデータからparseしてデータ取り出し
-//              console.log(data);
-                let result = JSON.parse(data.ResultSet);
-                document.getElementById("ResultImg").src = result.pred_png;
-                document.getElementById("ResultLabel").textContent = result.pred_label;
-                document.getElementById("ResultScore").textContent = result.pred_score;
-                document.getElementById("Label0").textContent = result.label0;
-                document.getElementById("Label1").textContent = result.label1;
-                document.getElementById("Label2").textContent = result.label2;
-                document.getElementById("Label3").textContent = result.label3;
-                document.getElementById("Label4").textContent = result.label4;
-                document.getElementById("Label5").textContent = result.label5;
-                document.getElementById("Label6").textContent = result.label6;
-                document.getElementById("Label7").textContent = result.label7;
-                document.getElementById("Label8").textContent = result.label8;
-                document.getElementById("Label9").textContent = result.label9;
+                let ret = JSON.parse(data.results);
+                document.getElementById("ResultImg").src = ret.pred_png;
+                document.getElementById("ResultLabel").textContent = ret.pred_label;
+                document.getElementById("ResultScore").textContent = ret.pred_score;
             }
         });
     }
 
-    // Restボタン押下イベント
-    function handleClick_reset(event) {
-
-        // シェイプのグラフィックスを消去
+    // reset button event
+    function resetEvent(event) {
         shape.graphics.clear();
-        shape.graphics.beginFill("black"); // background color
+        shape.graphics.beginFill("white"); 
         shape.graphics.drawRect(0, 0, 240, 240);
         shape.graphics.endFill();
-        stage1.update();
-        let png = stage1.canvas.toDataURL();
-        document.getElementById("ChgPngImg").src = png;
+        canvas.update();
+        let png = canvas.canvas.toDataURL();
+        // document.getElementById("ChgPngImg").src = png;
     }
 
-    // 時間経過イベント
+    // tick event
     createjs.Ticker.addEventListener("tick", handleTick);
     function handleTick() {
-
-        // Stage2の描画を更新
-        stage2.update();
+        buttons.update();
     }
 
-    /**
-    * @param {String} text ボタンのラベル文言です。
-    * @param {Number} width ボタンの横幅(単位はpx)です。
-    * @param {Number} height ボタンの高さ(単位はpx)です。
-    * @param {String} keyColor ボタンのキーカラーです。
-    * @returns {createjs.Container} ボタンの参照を返します。
-    */
-    function createButton(text, width, height, keyColor) {
 
-        // ボタン要素をグループ化
-        let button = new createjs.Container();
-        button.name = text; // ボタンに参考までに名称を入れておく(必須ではない)
-        button.cursor = "pointer"; // ホバー時にカーソルを変更する
+    function createButton(name, width, height, keyColor) {
+        // create button container
+        let buttonContainer = new createjs.Container();
+        buttonContainer.name = name; 
+        buttonContainer.cursor = "pointer"; 
 
-        // 通常時の座布団を作成
+        // background of button
         let bgUp = new createjs.Shape();
         bgUp.graphics
-              .setStrokeStyle(1.0)
-              .beginStroke(keyColor)
-              .beginFill("white")
-              .drawRoundRect(0.5, 0.5, width - 1.0, height - 1.0, 4);
-        button.addChild(bgUp);
-        bgUp.visible = true; // 表示する
+            .setStrokeStyle(1.0)
+            .beginStroke(keyColor)
+            .beginFill("white")
+            .drawRoundRect(0.5, 0.5, width - 1.0, height - 1.0, 4);
+        buttonContainer.addChild(bgUp);
+        bgUp.visible = true; 
 
-        // ロールオーバー時の座布団を作成
+        // mouse is hover 
         let bgOver = new createjs.Shape();
         bgOver.graphics
               .beginFill(keyColor)
               .drawRoundRect(0, 0, width, height, 4);
-        bgOver.visible = false; // 非表示にする
-        button.addChild(bgOver);
+        bgOver.visible = false; 
+        buttonContainer.addChild(bgOver);
 
-        // ラベルを作成
-        let label = new createjs.Text(text, "18px sans-serif", keyColor);
+        // label
+        let label = new createjs.Text(name, "18px sans-serif", keyColor);
         label.x = width / 2;
         label.y = height / 2;
         label.textAlign = "center";
         label.textBaseline = "middle";
-        button.addChild(label);
+        buttonContainer.addChild(label);
 
-        // ロールオーバーイベントを登録
-        button.addEventListener("mouseover", handleMouseOver);
-        button.addEventListener("mouseout", handleMouseOut);
+        // add mouse events
+        buttonContainer.addEventListener("mouseover", handleMouseOver);
+        buttonContainer.addEventListener("mouseout", handleMouseOut);
 
-        // マウスオーバイベント
+        // when mouse is hover
         function handleMouseOver(event) {
             bgUp.visble = false;
             bgOver.visible = true;
             label.color = "white";
         }
 
-        // マウスアウトイベント
+        // mouse is out
         function handleMouseOut(event) {
             bgUp.visble = true;
             bgOver.visible = false;
             label.color = keyColor;
         }
 
-        return button;
+        return buttonContainer;
     }
 }
