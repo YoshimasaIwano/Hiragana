@@ -181,21 +181,21 @@ function init() {
     // --------------------------------------------------------------
     // Stage1オブジェクト：WriteCanvas
     // --------------------------------------------------------------
-    let stage1 = new createjs.Stage("WriteCanvas");
+    let drawCanvas = new createjs.Stage("WriteCanvas");
 
     // タッチイベントが有効なブラウザの場合、
     // CreateJSでタッチイベントを扱えるようにする
     if (createjs.Touch.isSupported()) {
-        createjs.Touch.enable(stage1);
+        createjs.Touch.enable(drawCanvas);
     }
 
     let shape = new createjs.Shape();   // シェイプを作成
-    stage1.addChild(shape);             // ステージに配置
+    drawCanvas.addChild(shape);             // ステージに配置
 
-    handleClick_reset();
+    resetEvent();
 
     // ステージ上でマウスボタンを押した時のイベント設定
-    stage1.addEventListener("stagemousedown", handleDown);
+    drawCanvas.addEventListener("stagemousedown", handleDown);
 
     // マウスを押した時に実行される
     function handleDown(event) {
@@ -209,8 +209,8 @@ function init() {
                 .moveTo(event.stageX, event.stageY);    // 描画開始位置を指定
 
         // ステージ上でマウスを動かした時と離した時のイベント設定
-        stage1.addEventListener("stagemousemove", handleMove);
-        stage1.addEventListener("stagemouseup", handleUp);
+        drawCanvas.addEventListener("stagemousemove", handleMove);
+        drawCanvas.addEventListener("stagemouseup", handleUp);
     }
 
     // マウスが動いた時に実行する
@@ -230,44 +230,44 @@ function init() {
         shape.graphics.endStroke();
 
         // イベント解除
-        stage1.removeEventListener("stagemousemove", handleMove);
-        stage1.removeEventListener("stagemouseup", handleUp);
+        drawCanvas.removeEventListener("stagemousemove", handleMove);
+        drawCanvas.removeEventListener("stagemouseup", handleUp);
     }
 
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
     createjs.Ticker.addEventListener("tick", onTick);
 
     function onTick() {
-        stage1.update(); // Stageの描画を更新
+        drawCanvas.update(); // Stageの描画を更新
     }
 
     // --------------------------------------------------------------
     // Stage2オブジェクト：ButtonCanvas
     // --------------------------------------------------------------
-    let stage2 = new createjs.Stage("ButtonCanvas");
-    stage2.enableMouseOver();
+    let buttonCanvas = new createjs.Stage("ButtonCanvas");
+    buttonCanvas.enableMouseOver();
 
     // ボタンを作成
-    let btn1 = createButton("Predict", 80, 30, "#0650c7");
-    btn1.x = 20;
-    btn1.y = 10;
-    stage2.addChild(btn1);
+    let predictButton = createButton("Predict", 80, 30, "#0650c7");
+    predictButton.x = 20;
+    predictButton.y = 10;
+    buttonCanvas.addChild(predictButton);
 
-    let btn2 = createButton("Reset", 80, 30, "#ff6161");
-    btn2.x = 110;
-    btn2.y = 10;
-    stage2.addChild(btn2);
+    let resetButton = createButton("Reset", 80, 30, "#ff6161");
+    resetButton.x = 110;
+    resetButton.y = 10;
+    buttonCanvas.addChild(resetButton);
 
     // イベントを登録
-    btn1.addEventListener("click", handleClick_png);
-    btn2.addEventListener("click", handleClick_reset);
+    predictButton.addEventListener("click", predictEvent);
+    resetButton.addEventListener("click", resetEvent);
 
     // Predictボタン押下イベント
-    function handleClick_png(event) {
+    function predictEvent(event) {
 
         // Canvasタグから画像に変換
-        stage1.update();
-        let png = stage1.canvas.toDataURL();
+        drawCanvas.update();
+        let png = drawCanvas.canvas.toDataURL();
         document.getElementById("ChgPngImg").src = png;
 
         // JQueryによるPOST処理
@@ -294,15 +294,15 @@ function init() {
     }
 
     // Restボタン押下イベント
-    function handleClick_reset(event) {
+    function resetEvent(event) {
 
         // シェイプのグラフィックスを消去
         shape.graphics.clear();
         shape.graphics.beginFill("white"); // background color
         shape.graphics.drawRect(0, 0, 240, 240);
         shape.graphics.endFill();
-        stage1.update();
-        let png = stage1.canvas.toDataURL();
+        drawCanvas.update();
+        let png = drawCanvas.canvas.toDataURL();
         document.getElementById("ChgPngImg").src = png;
     }
 
@@ -311,7 +311,7 @@ function init() {
     function handleTick() {
 
         // Stage2の描画を更新
-        stage2.update();
+        buttonCanvas.update();
     }
 
     /**
