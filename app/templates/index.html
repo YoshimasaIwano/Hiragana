@@ -1,45 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script type="text/javascript" src="static/Input.js"></script>
-        <link rel="icon" href="static/favicon.ico"/>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-        <meta name="msapplication-TileColor" content="#da532c">
-        <meta name="theme-color" content="#ffffff">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-        <title>Hiragana Classifier</title>
-    </head>
-    <body>
-        <div calss="container">
-            <div >Please write a number from 0 to 9</div>
-            <div><canvas id="WriteCanvas" width="240" height="240"></canvas></div>
-            <div id="ChgPngImg"></div>
-            <div><canvas id="ButtonCanvas" width="240" height="100"></canvas></div>
-
-            <div><img id="ResultImg" width="28" height="28" src="static/mnister-Mark-28px.png"></div>
-            <table id="TABLE1">
-                <tr>
-                    <th >Predicted Label</th>
-                    <th >Predicted Value</th>
-                </tr>
-                <tr>
-                    <td id="ResultLabel"></td>
-                    <td id="ResultScore"></td>
-                </tr>
-            </table>
-        </div>
-        
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
-    </body>
-</html> -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -61,24 +19,33 @@
         <title>Hiragana Classifier</title>
     </head>
     <body>
-        <div id="PleaseID">Please write a hiragana</div>
-       
-        <div><canvas id="WriteCanvas" width="240" height="240"></canvas></div>
-        <div id="ChgPngImg"></div>
-        <div><canvas id="ButtonCanvas" width="240" height="100"></canvas></div>
-        <div id="ExecuteID">Predicted results by AI</div>
-        <div><img id="ResultImg" width="28" height="28" src="static/mnister-Mark-28px.png"></div>
+        <div class="container text-center ">
+            <div id="PleaseID">Please write a hiragana</div>
+            <div>
+                <canvas class="border" id="WriteCanvas" width="240" height="240"></canvas>
+            </div>
+            <div id="ChgPngImg"></div>
+            <div><canvas id="ButtonCanvas" width="240" height="100"></canvas></div>
+            <div id="ExecuteID">Predicted results by AI</div>
+            <div><img id="ResultImg" width="28" height="28" src="static/mnister-Mark-28px.png"></div>
 
-        <table  id="TABLE1">
-            <tr>
-                <th> Predicted Label</th>
-                <th >Predicted Value</th>
-            </tr>
-            <tr>
-                <td  id="ResultLabel"></td>
-                <td  id="ResultScore"></td>
-            </tr>
-        </table>
+            <table class="table container-sm w-50">
+                <thead>
+                    <tr>
+                        <th scope="col">Predicted Label</th>
+                        <th scope="col">Predicted Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="ResultLabel"></td>
+                        <td id="ResultScore"></td>
+                    </tr>
+                </tbody>
+                
+            </table>
+        </div>
+        
 
         
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
