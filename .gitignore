@@ -1,9 +1,16 @@
 # add file names here
+
+# model weights
 *.h5
+
+# datasets
 hiragana_classifier/datasets/*
-*/.ipynb_checkponts/*
-.ipynb_checkponts
+hiragana_classifier/new_raw_datasets/*
+hiragana_classifier/new_datasets/*
+
+# jupyter notebook
 hiragana_classifier/.ipynb_checkpoints/*
-*/__pycahe__/*
 hiragana_classifier/__pycache__/*
+
+# only Mac OS
 .DS_Store
