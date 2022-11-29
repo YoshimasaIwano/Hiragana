@@ -64,7 +64,6 @@ function init() {
 
     // predict events
     function predictEvent(event) {
-
         // tranform canvas to data
         drawCanvas.update();
         let png = drawCanvas.canvas.toDataURL();
@@ -72,6 +71,24 @@ function init() {
 
         // send png from javasrcipt to python 
         let textData = JSON.stringify({"b64_pngdata":png});
+        // // console.log(png);
+        // fetch('/output',{
+        //     method:'POST',
+        //     headers: {
+        //         contentType:'application/json'
+        //     },
+        //     body:textData,
+        // })
+        // .then((res) => {
+        //     return res.json()
+        // })
+        // .then((data) => {
+        //     // retrieve json 
+        //     let result = JSON.parse(data.ResultSet);
+        //     document.getElementById('resultImage').src = result.pred_png;
+        //     document.getElementById("resultLabel").textContent = result.pred_label;
+        //     document.getElementById("resultScore").textContent = result.pred_score;
+        // })
         $.ajax({
             type:'POST',
             url:'/output',
@@ -83,6 +100,7 @@ function init() {
             success:function(data){
                 // retrieve json 
                 let result = JSON.parse(data.ResultSet);
+                document.getElementById('resultImage').src = result.pred_png;
                 document.getElementById("resultLabel").textContent = result.pred_label;
                 document.getElementById("resultScore").textContent = result.pred_score;
             }

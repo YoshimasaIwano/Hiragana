@@ -52,6 +52,10 @@ def index():
 def output():
     # Receiving hiragana input as json type
     b64_pngdata = request.json['b64_pngdata']
+    # print(b64_pngdata)
+    # data = request.get_json()
+    # print(data)
+    # b64_pngdata = data['b64_pngdata']
 
     # base64 decode
     tmpdata = b64_pngdata.split(',')  
