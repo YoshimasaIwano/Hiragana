@@ -1,171 +1,120 @@
-############################################################
-# mnister (keras save_model) by YoshimasaIwano, Kaiyu0128
-############################################################
-import argparse
-import tensorflow
+'''
+Hiragana Classifier by YoshimasaIwano, Kaiyu0128
+'''
+# import argparse
+import tensorflow as tf
 import base64
 import json
 import numpy as np
 from flask import Flask, request, render_template, jsonify
-from flask_ngrok import run_with_ngrok
+# from flask_ngrok import run_with_ngrok
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 from io import BytesIO
 from PIL import Image
+from waitress import serve
 
+from model import EfficientHiragana
 
-############################################################
-# Flask
-############################################################
 app = Flask(__name__)
 
+# labels
+class_names = ['a', 'e', 'ha', 'he', 'hi', 'ho', 'hu', 'i', 'ka', 'ke', 'ki', 'ko', 'ku', 'ma', 'me', 'mi', 'mo', 'mu', 'na', 'ne', 'ni', 'nn', 'no', 'nu', 'o', 'ra', 're', 'ri', 'ro', 'ru', 'sa', 'se', 'si', 'so', 'su', 'ta', 'te', 'ti', 'to', 'tu', 'u', 'wa', 'wo', 'ya', 'yo', 'yu']
 
-############################################################
-# validation
-############################################################
-def validation():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--colab',
-                        action="store_true",
-                        help='Specify when running on Google Colab.(use flask-ngrok)')
-    args = parser.parse_args()
-    return args
-
-
-############################################################
-# 引数チェック
-############################################################
-args = validation()
-if args.colab:                              # use Google Colab
-    print("use flask-ngrok.")
-    run_with_ngrok(app)
-
-
-############################################################
-# 初期設定
-############################################################
-# 【注意】
-# keras or tensorflow のバージョンをupgradeしてバージョンUPしておくこと
-# keras : 2.3.1
-# tensorflow : 2.3.0
-# pip install --upgrade pip --user
-# pip install --upgrade tensorflow --user
-# pip install --upgrade keras --user
-
-# print("keras : ", keras.__version__)
-# print("tensorflow : ", tensorflow.__version__)
-
-# ラベル
-label = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-# modelの読込と表示
-model = load_model('colab_mnist.hdf5')
+# loading model and summary
+IMG_SIZE = 48
+input_shape = IMG_SIZE 
+output_shape = 46
+model = EfficientHiragana(input_shape, output_shape)
+optimizer = tf.keras.optimizers.Adam()
+model.build(input_shape=(None, IMG_SIZE, IMG_SIZE, 3))
+model.compile(
+    optimizer=optimizer,
+    loss='categorical_crossentropy',
+    metrics=['accuracy']
+)
+model.load_weights('EfficientNetB0_Hiragana.h5')
 model.summary()
 
-# Input Sizeの自動判別
-_, img_w, img_h, img_ch = model.layers[0].input.shape
+# Input Size classification
+img_w, img_h, img_ch = IMG_SIZE, IMG_SIZE, 3
 print("img_w:{} img_h:{} img_ch:{}".format(img_w, img_h, img_ch))
 
-############################################################
 # index.html
-############################################################
 @app.route("/")
 def index():
     return render_template('index.html')
 
 
-############################################################
-# Input.jsからPOSTされたときに動作
-############################################################
+
+# Activate when hiragana is posted from input.js
 @app.route('/output', methods=['POST'])
 def output():
-    # json形式でデータを受け取る
+    # Receiving hiragana input as json type
     b64_pngdata = request.json['b64_pngdata']
-#   display(b64_pngdata, "b64_pngdata")
+    # print(b64_pngdata)
+    # data = request.get_json()
+    # print(data)
+    # b64_pngdata = data['b64_pngdata']
 
-    # base64デコード
-    tmpdata = b64_pngdata.split(',')  # base64のヘッダを削除
-    bindata = base64.b64decode(tmpdata[1])  # 「data:image/png;base64,～」以降のデータのみをデコード
-#   display(bindata, "bindata")
+    # base64 decode
+    tmpdata = b64_pngdata.split(',')  
+    bindata = base64.b64decode(tmpdata[1])  
 
-    # pillow形式で読み込み画像のリサイズを行う
-    imgPIL = Image.open(BytesIO(bindata)).convert('RGB')
+    # Resizing input image size
+    tmp_img = Image.open(BytesIO(bindata)).convert('RGB')
     if img_ch == 1:
-        imgPIL = imgPIL.convert('L')            # グレースケール
-    imgPIL = imgPIL.resize((img_w, img_h))      # リサイズ
-#   imgPIL.show()
+        tmp_img = tmp_img.convert('L')     
+    tmp_img = tmp_img.resize((img_w, img_h))    
 
-    # pillow形式→バイナリ変換
+    # pillow→binary
     with BytesIO() as output_png:
-        imgPIL.save(output_png, format="PNG")
-        contents = output_png.getvalue()  # バイナリ取得
+        tmp_img.save(output_png, format="PNG")
+        contents = output_png.getvalue()  
 
-    # mnist形式
-    x = img_to_array(imgPIL) / 255
+    # mnist type convert
+    x = img_to_array(tmp_img) 
     x = x[None, ...]
 
-    # shape確認
-#   print(x.shape)
-    print("")
-
-    # 遊星からの物体Xの推測
+    # prediction
     pred = model.predict(x)
     np.set_printoptions(suppress=True, precision=10, floatmode='fixed')
     print(pred)
-#   print(type(pred))
-    print("")
 
-    # 推測ラベル
-    pred_label = label[int(np.argmax(pred[0]))]
+    # predicted label
+    pred_label = class_names[int(np.argmax(pred[0]))]
     print("label:", pred_label)
 
-    # 推測スコア
+    # predicted score
     score = str("{:.10f}".format(np.max(pred)))
     print("score:", score)
     print("------------------------------------------------------------------")
 
-    # base64エンコード
-    tmpdata = str(base64.b64encode(contents))
-    #   display(tmpdata, "tmpdata")
-    tmpdata = tmpdata[2:-1]  # 「ｂ’～’」の中身だけをエンコード
+    # base64 encode
+    tmp_data = str(base64.b64encode(contents))
+    tmp_data = tmp_data[2:-1]  
 
-    data1 = "data:image/png;base64," + tmpdata
+    data1 = "data:image/png;base64," + tmp_data
     data2 = pred_label
     data3 = score
-    label_score = [str("{:.10f}".format(n)) for n in pred[0]]
-#   print(label_name)
+    # label_score = [str("{:.10f}".format(n)) for n in pred[0]]
 
     return_data = {"pred_png": data1,
                    "pred_label": data2,
                    "pred_score": data3,
-                   "label0": label_score[0],
-                   "label1": label_score[1],
-                   "label2": label_score[2],
-                   "label3": label_score[3],
-                   "label4": label_score[4],
-                   "label5": label_score[5],
-                   "label6": label_score[6],
-                   "label7": label_score[7],
-                   "label8": label_score[8],
-                   "label9": label_score[9]
                    }
 
     return jsonify(ResultSet=json.dumps(return_data))
 
-
-############################################################
-# debug用
-############################################################
+# For debug
 def display(data, name):
     print(name)
     print(data)
     print(type(data))
     print("")
 
-
-############################################################
-# flask起動
-############################################################
+# Activate flask
 if __name__ == '__main__':
     app.debug = False
-    app.run()
+    # app.run()
+    serve(app, host='0.0.0.0', port=5000)
