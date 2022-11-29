@@ -55,20 +55,8 @@ function init() {
         drawCanvas.update(); 
     }
 
-    // Button Canvas
-    let buttonCanvas = new createjs.Stage("ButtonCanvas");
-    buttonCanvas.enableMouseOver();
-
-    // create button
-    let predictButton = createButton("Predict", 80, 30, "#0650c7");
-    predictButton.x = 20;
-    predictButton.y = 10;
-    buttonCanvas.addChild(predictButton);
-
-    let resetButton = createButton("Reset", 80, 30, "#ff6161");
-    resetButton.x = 110;
-    resetButton.y = 10;
-    buttonCanvas.addChild(resetButton);
+    let predictButton = document.getElementById('predictBtn');
+    let resetButton = document.getElementById('resetBtn');
 
     // add events
     predictButton.addEventListener("click", predictEvent);
@@ -80,7 +68,7 @@ function init() {
         // tranform canvas to data
         drawCanvas.update();
         let png = drawCanvas.canvas.toDataURL();
-        document.getElementById("ChgPngImg").src = png;
+        document.getElementById("mainImage").src = png;
 
         // send png from javasrcipt to python 
         let textData = JSON.stringify({"b64_pngdata":png});
@@ -95,9 +83,8 @@ function init() {
             success:function(data){
                 // retrieve json 
                 let result = JSON.parse(data.ResultSet);
-                document.getElementById("ResultImg").src = result.pred_png;
-                document.getElementById("ResultLabel").textContent = result.pred_label;
-                document.getElementById("ResultScore").textContent = result.pred_score;
+                document.getElementById("resultLabel").textContent = result.pred_label;
+                document.getElementById("resultScore").textContent = result.pred_score;
             }
         });
     }
@@ -110,66 +97,6 @@ function init() {
         shape.graphics.endFill();
         drawCanvas.update();
         let png = drawCanvas.canvas.toDataURL();
-        document.getElementById("ChgPngImg").src = png;
-    }
-
-    // tick event
-    createjs.Ticker.addEventListener("tick", handleTick);
-    function handleTick() {
-        buttonCanvas.update();
-    }
-
-
-    // create bunttn function 
-    function createButton(text, width, height, keyColor) {
-        let button = new createjs.Container();
-        button.name = text; 
-        button.cursor = "pointer"; 
-
-        // background
-        let bgUp = new createjs.Shape();
-        bgUp.graphics
-              .setStrokeStyle(1.0)
-              .beginStroke(keyColor)
-              .beginFill("white")
-              .drawRoundRect(0.5, 0.5, width - 1.0, height - 1.0, 4);
-        button.addChild(bgUp);
-        bgUp.visible = true; 
-
-        // hover action
-        let bgOver = new createjs.Shape();
-        bgOver.graphics
-              .beginFill(keyColor)
-              .drawRoundRect(0, 0, width, height, 4);
-        bgOver.visible = false; 
-        button.addChild(bgOver);
-
-        // create label
-        let label = new createjs.Text(text, "18px sans-serif", keyColor);
-        label.x = width / 2;
-        label.y = height / 2;
-        label.textAlign = "center";
-        label.textBaseline = "middle";
-        button.addChild(label);
-
-        // add events
-        button.addEventListener("mouseover", handleMouseOver);
-        button.addEventListener("mouseout", handleMouseOut);
-
-        // mouse is hover
-        function handleMouseOver(event) {
-            bgUp.visble = false;
-            bgOver.visible = true;
-            label.color = "white";
-        }
-
-        // mouse is out
-        function handleMouseOut(event) {
-            bgUp.visble = true;
-            bgOver.visible = false;
-            label.color = keyColor;
-        }
-
-        return button;
+        document.getElementById("mainImage").src = png;
     }
 }
