@@ -25,7 +25,7 @@ function init() {
         // start to draw
         shape.graphics
             .beginStroke(paintColor)
-            .setStrokeStyle(20, "round")
+            .setStrokeStyle(18, "round")
             .moveTo(event.stageX, event.stageY);
 
         // add events mouse move and up

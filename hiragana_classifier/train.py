@@ -59,7 +59,7 @@ def main():
     #   layer.trainable = False
 
     # train model 
-    epochs=1
+    epochs=3
 
     history = model.fit(
         train_dataset,

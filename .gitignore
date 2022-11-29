@@ -11,6 +11,7 @@ hiragana_classifier/new_datasets/*
 # jupyter notebook
 hiragana_classifier/.ipynb_checkpoints/*
 hiragana_classifier/__pycache__/*
+app/__pycache__/*
 
 # only Mac OS
 .DS_Store

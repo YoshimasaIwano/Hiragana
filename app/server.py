@@ -1,14 +1,13 @@
 '''
 Hiragana Classifier by YoshimasaIwano, Kaiyu0128
 '''
-# import argparse
 import tensorflow as tf
 import base64
 import json
 import numpy as np
 from flask import Flask, request, render_template, jsonify
 # from flask_ngrok import run_with_ngrok
-from tensorflow.keras.models import load_model
+# from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 from io import BytesIO
 from PIL import Image
@@ -19,7 +18,7 @@ from model import EfficientHiragana
 app = Flask(__name__)
 
 # labels
-class_names = ['a', 'e', 'ha', 'he', 'hi', 'ho', 'hu', 'i', 'ka', 'ke', 'ki', 'ko', 'ku', 'ma', 'me', 'mi', 'mo', 'mu', 'na', 'ne', 'ni', 'nn', 'no', 'nu', 'o', 'ra', 're', 'ri', 'ro', 'ru', 'sa', 'se', 'si', 'so', 'su', 'ta', 'te', 'ti', 'to', 'tu', 'u', 'wa', 'wo', 'ya', 'yo', 'yu']
+class_names = ['あ(a)', 'え(e)', 'は(ha)', 'へ(he)', 'ひ(hi)', 'ほ(ho)', 'ふ(fu)', 'い(i)', 'か(ka)', 'け(ke)', 'き(ki)', 'こ(ko)', 'く(ku)', 'ま(ma)', 'め(me)', 'み(mi)', 'も(mo)', 'む(mu)', 'な(na)', 'ね(ne)', 'に(ni)', 'ん(n)', 'の(no)', 'ぬ(ne)', 'お(o)', 'ら(ra)', 'れ(re)', 'り(ri)', 'ろ(ro)', 'る(ru)', 'さ(sa)', 'せ(se)', 'し(shi)', 'そ(so)', 'す(su)', 'た(ta)', 'て(te)', 'ち(chi)', 'と(to)', 'つ(tsu)', 'う(u)', 'わ(wa)', 'を(wo)', 'や(ya)', 'よ(yo)', 'ゆ(yu)']
 
 # loading model and summary
 IMG_SIZE = 48
@@ -45,17 +44,11 @@ print("img_w:{} img_h:{} img_ch:{}".format(img_w, img_h, img_ch))
 def index():
     return render_template('index.html')
 
-
-
 # Activate when hiragana is posted from input.js
 @app.route('/output', methods=['POST'])
 def output():
     # Receiving hiragana input as json type
     b64_pngdata = request.json['b64_pngdata']
-    # print(b64_pngdata)
-    # data = request.get_json()
-    # print(data)
-    # b64_pngdata = data['b64_pngdata']
 
     # base64 decode
     tmpdata = b64_pngdata.split(',')  
@@ -72,7 +65,7 @@ def output():
         tmp_img.save(output_png, format="PNG")
         contents = output_png.getvalue()  
 
-    # mnist type convert
+    # image type convert
     x = img_to_array(tmp_img) 
     x = x[None, ...]
 
@@ -94,24 +87,14 @@ def output():
     tmp_data = str(base64.b64encode(contents))
     tmp_data = tmp_data[2:-1]  
 
-    data1 = "data:image/png;base64," + tmp_data
-    data2 = pred_label
-    data3 = score
-    # label_score = [str("{:.10f}".format(n)) for n in pred[0]]
+    img_data = "data:image/png;base64," + tmp_data
 
-    return_data = {"pred_png": data1,
-                   "pred_label": data2,
-                   "pred_score": data3,
+    return_data = {"pred_png": img_data,
+                   "pred_label": pred_label,
+                   "pred_score": score,
                    }
 
     return jsonify(ResultSet=json.dumps(return_data))
-
-# For debug
-def display(data, name):
-    print(name)
-    print(data)
-    print(type(data))
-    print("")
 
 # Activate flask
 if __name__ == '__main__':
