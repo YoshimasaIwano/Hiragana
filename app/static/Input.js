@@ -1,3 +1,9 @@
+/*
+    For drawing box and receiving output from the backend
+
+    Author: YoshimasaIwano and KaiyuYokoi
+ */
+
 // use Createjs and JQuery
 window.addEventListener("load", init);
 function init() {

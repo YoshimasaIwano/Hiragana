@@ -1,7 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
+'''
+    For the training the model.
 
+    Author: YoshimasaIwano
+'''
+
+import tensorflow as tf
 import os
 
 from model import EfficientHiragana
@@ -31,8 +34,6 @@ def main():
     all_batches = tf.data.experimental.cardinality(datasets)
     test_dataset = datasets.take(all_batches // 10)
     train_dataset = datasets.skip(all_batches // 10)
-
-    
 
     # prefetch
     AUTOTUNE = tf.data.AUTOTUNE

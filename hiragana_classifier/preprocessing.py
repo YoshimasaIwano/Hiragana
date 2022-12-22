@@ -1,3 +1,9 @@
+'''
+    the preporcessing for new dataset to resize and save iamges.
+
+    Author: YoshimasaIwano
+'''
+
 import os 
 import glob
 from PIL import Image
