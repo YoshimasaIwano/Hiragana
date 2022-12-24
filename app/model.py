@@ -1,9 +1,14 @@
+'''
+    The model definition.
+
+    Author: YoshimasaIwano
+'''
 import tensorflow as tf
 
 class EfficientHiragana(tf.keras.Model):
     def __init__(self, img_size, output_shape):
         super().__init__()
-        self.input_layer = tf.keras.layers.Conv2D(filters=3, kernel_size=2, strides=1, padding='same')
+        self.input_layer = tf.keras.layers.Conv2D(filters=3, kernel_size=2, strides=1, padding='same')  # to let the input image have 3 channels
         self.model = tf.keras.applications.efficientnet.EfficientNetB0(input_shape=(img_size,img_size,3), include_top=False, weights='imagenet')
         self.flatten = tf.keras.layers.Flatten()
         self.fc = tf.keras.layers.Dense(output_shape)
