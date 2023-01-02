@@ -41,7 +41,7 @@ def main():
 
     # data augumentation
     data_augumentation = tf.keras.Sequential([
-        layers.RandomZoom(height_factor=0.2, fill_mode='reflect'),
+        layers.RandomZoom(height_factor=(0.2, 0.3), width_factor=(0.2, 0.3), fill_mode='reflect'),
     ])
 
     train_dataset = train_dataset.repeat(2)
