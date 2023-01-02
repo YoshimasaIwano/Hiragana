@@ -5,6 +5,7 @@
 '''
 
 import tensorflow as tf
+from tensorflow.keras import layers
 import os
 
 from model import EfficientHiragana
@@ -38,6 +39,14 @@ def main():
     # prefetch
     AUTOTUNE = tf.data.AUTOTUNE
 
+    # data augumentation
+    data_augumentation = tf.keras.Sequential([
+        layers.RandomZoom(height_factor=0.2, fill_mode='reflect'),
+    ])
+
+    train_dataset = train_dataset.repeat(2)
+    train_dataset = train_dataset.map(lambda x, y: (data_augumentation(x, training=True), y))
+
     train_dataset = train_dataset.prefetch(buffer_size=AUTOTUNE)
     test_dataset = test_dataset.prefetch(buffer_size=AUTOTUNE)
 
@@ -60,7 +69,7 @@ def main():
     #   layer.trainable = False
 
     # train model 
-    epochs=3
+    epochs=1
 
     history = model.fit(
         train_dataset,

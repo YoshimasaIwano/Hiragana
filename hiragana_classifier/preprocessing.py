@@ -18,7 +18,7 @@ def main():
         root, ext = os.path.splitext(f)
         root = root.replace('new_raw_datasets', 'datasets')
         # os.makedirs(os.path.join(parent_dir, os.path.basename(os.path.dirname(root))), exist_ok=True)
-        # img_resize.save(root + '.png')
+        img_resize.save(root + '.png')
 
 if __name__ == '__main__':
     main()
