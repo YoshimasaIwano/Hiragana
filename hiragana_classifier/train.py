@@ -6,6 +6,8 @@
 
 import tensorflow as tf
 from tensorflow.keras import layers
+# import albumentations as A
+# from functools import partial
 import os
 
 from model import EfficientHiragana
@@ -33,19 +35,31 @@ def main():
 
     # train / test split with 10:1
     all_batches = tf.data.experimental.cardinality(datasets)
-    test_dataset = datasets.take(all_batches // 10)
-    train_dataset = datasets.skip(all_batches // 10)
+    test_dataset = datasets.take(all_batches // 100)
+    train_dataset = datasets.skip(all_batches // 100)
 
     # prefetch
     AUTOTUNE = tf.data.AUTOTUNE
 
     # data augumentation
-    data_augumentation = tf.keras.Sequential([
-        layers.RandomZoom(height_factor=(0.2, 0.3), width_factor=(0.2, 0.3), fill_mode='reflect'),
+    data_augmentation = tf.keras.Sequential([
+        layers.RandomZoom(height_factor=(-0.3, 0.3), width_factor=(-0.3, 0.3), fill_mode='reflect'),
+        layers.RandomRotation(factor=(-0.1, 0.1), fill_mode='reflect'),
     ])
 
     train_dataset = train_dataset.repeat(2)
-    train_dataset = train_dataset.map(lambda x, y: (data_augumentation(x, training=True), y))
+    train_dataset = train_dataset.map(lambda x, y: (data_augmentation(x, training=True), y))
+
+    # # albumentations
+    # transform = A.Compose([
+    #     A.CropAndPad(percent=(0.2, 0.3), p=0.5)
+    # ])
+
+    # def augmentations(image, label):
+    #     aug_data = transform(image)
+    #     return aug_data, label
+
+    # aug_train_dataset = train_dataset.map(partial(augmentations))
 
     train_dataset = train_dataset.prefetch(buffer_size=AUTOTUNE)
     test_dataset = test_dataset.prefetch(buffer_size=AUTOTUNE)
@@ -69,7 +83,7 @@ def main():
     #   layer.trainable = False
 
     # train model 
-    epochs=1
+    epochs=3
 
     history = model.fit(
         train_dataset,
