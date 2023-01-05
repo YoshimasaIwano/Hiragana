@@ -15,7 +15,7 @@ from model import EfficientHiragana
 def main():
     # hyper parameters
     BATCH_SIZE=512
-    IMG_SIZE=48
+    IMG_SIZE=64
 
     # load images
     PATH = os.path.dirname(os.path.realpath(__file__))
@@ -43,11 +43,11 @@ def main():
 
     # data augumentation
     data_augmentation = tf.keras.Sequential([
-        layers.RandomZoom(height_factor=(-0.3, 0.3), width_factor=(-0.3, 0.3), fill_mode='reflect'),
+        layers.RandomZoom(height_factor=(-0.4, 0.2), width_factor=(-0.4, 0.2), fill_mode='reflect'),
         layers.RandomRotation(factor=(-0.1, 0.1), fill_mode='reflect'),
     ])
 
-    train_dataset = train_dataset.repeat(2)
+    train_dataset = train_dataset.repeat(3)
     train_dataset = train_dataset.map(lambda x, y: (data_augmentation(x, training=True), y))
 
     # # albumentations
